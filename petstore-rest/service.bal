@@ -24,7 +24,7 @@ service / on new http:Listener(9090) {
     function init() returns error? {
         // Initiate the mysql client at the start of the service. This will be used
         // throughout the lifetime of the service.
-        self.db = check new ("sahackathon.mysql.database.azure.com", "choreo", "wso2!234", "dulanja_db", 3306);
+        
     }
 
     resource function get items() returns Item[]|error {

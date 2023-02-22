@@ -3,6 +3,11 @@ import ballerina/sql;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
 
+configurable string DB_URL = ?;
+configurable string DB_USERNAME = ?;
+configurable string DB_PASSWORD = ?;
+configurable string DB_NAME = ?;
+
 type Item record {|
     string code;
     string title;
@@ -24,7 +29,7 @@ service / on new http:Listener(9090) {
     function init() returns error? {
         // Initiate the mysql client at the start of the service. This will be used
         // throughout the lifetime of the service.
-        
+        self.db = check new (DB_URL, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306);
     }
 
     resource function get items() returns Item[]|error {

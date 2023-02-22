@@ -29,7 +29,7 @@ service / on new http:Listener(9090) {
     function init() returns error? {
         // Initiate the mysql client at the start of the service. This will be used
         // throughout the lifetime of the service.
-        self.db = check new (DB_URL, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306);
+        self.db = check new (DB_URL, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306, connectionPool={maxOpenConnections: 3});
     }
 
     resource function get items() returns Item[]|error {

@@ -66,28 +66,22 @@ service /items on new graphql:Listener(9000) {
     function init() returns error? {
         // Initiate the mysql client at the start of the service. This will be used
         // throughout the lifetime of the service.
-        self.db = check new (DB_URL, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306);
+        self.db = check new (DB_URL, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306, connectionPool={maxOpenConnections: 3});
     }
     
-    resource function get all() returns ItemRecord[] | error? {
-
-        // Execute simple query to retrieve all records from the `item` table.
+    resource function get all() returns Item[] | error? {
+        // TODO: Use parameterized query to retrieve records from the `item` table.
         stream<ItemRecord, sql:Error?> itemStream = self.db->query(`SELECT * FROM item`);
-        ItemRecord[] items = check from ItemRecord itemRecord in itemStream
+        ItemRecord[] itemRecords = check from ItemRecord itemRecord in itemStream
                         select itemRecord;
-        return items;
+        return itemRecords.map(entry => new Item(entry));
     }
 
-    // resource function get filter(string isoCode) returns CovidData? {
-    //     Item? Item = covidEntriesTable[isoCode];
-    //     if Item is Item {
-    //         return new (Item);
-    //     }
-    //     return;
-    // }
-
-    // remote function add(Item entry) returns CovidData {
-    //     covidEntriesTable.add(entry);
-    //     return new CovidData(entry);
-    // }
+    resource function get filter(string itemCode) returns Item | error? {
+        // TODO: Use parameterized query to retrieve records from the `item` table.
+        stream<ItemRecord, sql:Error?> itemStream = self.db->query(`SELECT * FROM item WHERE code = ${itemCode}`);
+        ItemRecord[] itemRecords = check from ItemRecord itemRecord in itemStream
+                        select itemRecord;
+        return new Item(itemRecords[0]);
+    }
 }
